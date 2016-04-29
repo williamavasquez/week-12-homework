@@ -41,22 +41,23 @@ function askCustomer(){
     prompt.get(infoSchema, function (err,res){
       var order = {
         ItemID: res.ItemID,
-        Qty: res.Qty};
+        Qty: res.Qty
+      };
         customerOrder.push(order);
+
+        // new query for the products the customer selected
         connection.query('SELECT * FROM products where ItemID=?',customerOrder[0].ItemID, function(err, result) {
         if (result[0].StockQuantity>= customerOrder[0].Qty) {
-
           console.log('Your total comes to: '+(customerOrder[0].Qty*result[0].Price));
           remainingStock = result[0].StockQuantity - customerOrder[0].Qty;
-          console.log('UPDATE products set StockQuantity ='+ remainingStock+ ' where ItemID ='+ customerOrder[0].ItemID);
+          // querry to update stock
           connection.query('UPDATE products set StockQuantity ='+ remainingStock+ ' where ItemID ='+ customerOrder[0].ItemID, function(err, result) {
             console.log(err);
-          console.log("Sale has been Processed. Thank you!");
+            console.log("Sale has been Processed. Thank you!");
           connection.end();
         });
         } else {
           console.log("Sorry, we are currently out of stock");
-
           connection.end();
         }
         });
